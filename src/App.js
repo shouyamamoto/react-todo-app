@@ -1,39 +1,65 @@
+import React, { useState } from 'react'
 import './App.css'
+import { InputArea } from './components/InputArea'
+import { IncompleteTodo } from './components/IncompleteTodo'
+import { CompleteTodo } from './components/CompleteTodo'
 
 function App() {
+  const [inputTodo, setInputTodo] = useState('')
+  const [incompleteTodo, setIncompleteTodo] = useState(['ああああ', 'いいいい'])
+  const [completeTodo, setCompleteTodo] = useState(['うううう'])
+
+  const onChangeTodoText = (event) => {setInputTodo(event.target.value)}
+
+  const onClickAdd = () => {
+    if(inputTodo) {
+      const newIncompleteTodo = [...incompleteTodo, inputTodo]
+      setIncompleteTodo(newIncompleteTodo)
+      setInputTodo('')
+    }
+  }
+
+  const onClickComplete = (index) => {
+    const newIncompleteTodo = [...incompleteTodo] // incompleteTodoをコピーする
+    const newCompleteTodo = [...completeTodo, incompleteTodo[index]] // completeTodoを展開して、クリックされたTODOを結合する
+    newIncompleteTodo.splice(index, 1) // コピーした配列からクリックされたTODOを削除
+    setCompleteTodo(newCompleteTodo)
+    setIncompleteTodo(newIncompleteTodo)
+  }
+
+  const onClickDelete = (index) => {
+    const newTodo = [...incompleteTodo]
+    newTodo.splice(index, 1)
+    setIncompleteTodo(newTodo)
+  }
+
+  const onClickBack = (index) => {
+    const newCompleteTodo = [...completeTodo]
+    const newIncompleteTodo = [...incompleteTodo, completeTodo[index]]
+    newCompleteTodo.splice(index, 1)
+    setIncompleteTodo(newIncompleteTodo)
+    setCompleteTodo(newCompleteTodo)
+  }
+
   return (
-    <div className="App">
-      <div class="input-area">
-        <input type="text" placeholder="TODOを入力" id="add-text" />
-        <button id="add-button">追加</button>
-      </div>
+    <React.Fragment>
+      <InputArea 
+        inputTodo={inputTodo}
+        onChangeTodoText={onChangeTodoText}
+        onClickAdd={onClickAdd}
+      />
 
-      <div class="incomplete-area">
-        <p class="title">未完了のTODO</p>
-        <ul id="incomplete-todos">
-          <div class="list-row">
-            <li>あああああ</li>
-            <button class="complete-button">完了</button>
-            <button class="delete-button">削除</button>
-          </div>
-          <div class="list-row">
-            <li>いいいいいいい</li>
-            <button class="complete-button">完了</button>
-            <button class="delete-button">削除</button>
-          </div>
-        </ul>
-      </div>
+      <IncompleteTodo 
+        incompleteTodo={incompleteTodo}
+        onClickComplete={onClickComplete}
+        onClickDelete={onClickDelete}
+      />
 
-      <div class="complete-area">
-        <p class="title">完了したTODO</p>
-        <ul id="complete-todos">
-          <div class="list-row">
-            <li>うううう</li>
-            <button class="back-btn">戻す</button>
-          </div>
-        </ul>
-      </div>      
-    </div>
+      <CompleteTodo 
+        completeTodo={completeTodo}
+        onClickBack={onClickBack}
+      />      
+    </React.Fragment>
   );
 }
 
